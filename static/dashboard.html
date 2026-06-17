@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ReviewHost — Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a0f;color:#fff;min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;
+  border-bottom:1px solid rgba(255,255,255,.07);background:rgba(10,10,15,.95)}
+.logo{font-size:20px;font-weight:800;background:linear-gradient(90deg,#ff6b35,#ff8c42);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.wrap{max-width:900px;margin:0 auto;padding:40px 20px}
+h1{font-size:26px;font-weight:800;margin-bottom:6px}
+.sub{color:rgba(255,255,255,.4);font-size:14px;margin-bottom:32px}
+.add-form{background:rgba(255,107,53,.06);border:1px solid rgba(255,107,53,.2);
+  border-radius:16px;padding:28px;margin-bottom:32px}
+.add-form h2{font-size:16px;font-weight:700;margin-bottom:18px;color:rgba(255,255,255,.8)}
+.form-row{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;margin-bottom:12px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+label{font-size:11px;letter-spacing:1px;color:rgba(255,255,255,.4)}
+input,textarea,select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  color:#fff;padding:10px 14px;border-radius:8px;font-size:14px;outline:none;font-family:inherit}
+input:focus,textarea:focus,select:focus{border-color:#ff6b35}
+textarea{resize:vertical;min-height:80px;width:100%;margin-bottom:12px}
+.btn{background:linear-gradient(135deg,#ff6b35,#e55a2b);border:none;color:#fff;
+  padding:10px 22px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer}
+.btn:hover{opacity:.9}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:6px}
+.btn-copy{background:rgba(255,107,53,.15);border:1px solid rgba(255,107,53,.3);
+  color:#ff6b35;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600}
+.btn-done{background:rgba(40,200,100,.12);border:1px solid rgba(40,200,100,.2);
+  color:#28c864;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600}
+.reviews{display:flex;flex-direction:column;gap:16px}
+.review-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:22px}
+.review-card.done{border-color:rgba(40,200,100,.15);opacity:.7}
+.review-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.stars{color:#ffcc00;font-size:16px}
+.reviewer-name{font-size:13px;color:rgba(255,255,255,.4);margin-top:2px}
+.review-text{font-size:14px;color:rgba(255,255,255,.7);line-height:1.6;margin-bottom:16px}
+.ai-box{background:rgba(255,107,53,.07);border:1px solid rgba(255,107,53,.15);
+  border-radius:10px;padding:16px;margin-bottom:12px}
+.ai-label{font-size:9px;letter-spacing:2px;color:#ff6b35;margin-bottom:8px}
+.ai-text{font-size:13px;color:rgba(255,255,255,.8);line-height:1.6}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.badge-done{background:rgba(40,200,100,.12);color:#28c864;border:1px solid rgba(40,200,100,.2);
+  padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600}
+.empty{text-align:center;padding:60px;color:rgba(255,255,255,.25);font-size:14px}
+.loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,107,53,.3);
+  border-top-color:#ff6b35;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">ReviewHost</div>
+  <span style="font-size:12px;color:rgba(255,255,255,.3)" id="biz-name"></span>
+</nav>
+<div class="wrap">
+  <h1>Review Dashboard</h1>
+  <p class="sub" id="sub-text">Laden...</p>
+
+  <div class="add-form">
+    <h2>Review toevoegen</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label>NAAM REVIEWER</label>
+        <input type="text" id="f-name" placeholder="Jan de Vries">
+      </div>
+      <div class="form-group">
+        <label>STERREN</label>
+        <select id="f-rating">
+          <option value="5">★★★★★ (5)</option>
+          <option value="4">★★★★☆ (4)</option>
+          <option value="3">★★★☆☆ (3)</option>
+          <option value="2">★★☆☆☆ (2)</option>
+          <option value="1">★☆☆☆☆ (1)</option>
+        </select>
+      </div>
+      <button class="btn" onclick="addReview()">Toevoegen</button>
+    </div>
+    <div class="form-group">
+      <label>REVIEW TEKST</label>
+      <textarea id="f-text" placeholder="Plak hier de review tekst..."></textarea>
+    </div>
+  </div>
+
+  <div class="reviews" id="reviews-list">
+    <div class="empty">Nog geen reviews. Voeg er een toe hierboven.</div>
+  </div>
+</div>
+
+<script>
+const KEY = new URLSearchParams(location.search).get('key') || '';
+if(!KEY){ document.body.innerHTML='<div style="text-align:center;padding:100px;color:#ff6b6b">Geen toegang — open de link uit je welkomstmail.</div>'; }
+
+async function load(){
+  const r = await fetch('/api/reviews?key='+KEY);
+  if(r.status===403){ document.body.innerHTML='<div style="text-align:center;padding:100px;color:#ff6b6b">Account niet actief.</div>'; return; }
+  const reviews = await r.json();
+  document.getElementById('sub-text').textContent = reviews.length + ' reviews · ' + reviews.filter(r=>r.responded).length + ' beantwoord';
+  const list = document.getElementById('reviews-list');
+  if(!reviews.length){ list.innerHTML='<div class="empty">Nog geen reviews. Voeg er een toe hierboven.</div>'; return; }
+  list.innerHTML = reviews.map(r=>`
+    <div class="review-card ${r.responded?'done':''}" id="card-${r.id}">
+      <div class="review-top">
+        <div>
+          <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+          <div class="reviewer-name">${r.reviewer}</div>
+        </div>
+        ${r.responded ? '<span class="badge-done">BEANTWOORD</span>' : ''}
+      </div>
+      <div class="review-text">${r.review_text}</div>
+      ${r.ai_response ? `
+        <div class="ai-box">
+          <div class="ai-label">AI ANTWOORD</div>
+          <div class="ai-text" id="resp-${r.id}">${r.ai_response}</div>
+        </div>
+        <div class="actions">
+          <button class="btn-copy" onclick="copyResp(${r.id})">Kopieer antwoord</button>
+          ${!r.responded ? `<button class="btn-done" onclick="markDone(${r.id})">Markeer als beantwoord</button>` : ''}
+          <button class="btn-copy" onclick="regen(${r.id})" style="opacity:.6">Genereer opnieuw</button>
+        </div>
+      ` : `
+        <button class="btn btn-sm" onclick="generate(${r.id})">Genereer AI antwoord</button>
+      `}
+    </div>`).join('');
+}
+
+async function addReview(){
+  const text = document.getElementById('f-text').value.trim();
+  if(!text){ alert('Vul de review tekst in'); return; }
+  await fetch('/api/reviews?key='+KEY,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({reviewer:document.getElementById('f-name').value||'Anoniem',
+      rating:parseInt(document.getElementById('f-rating').value), review_text:text})});
+  document.getElementById('f-text').value='';
+  document.getElementById('f-name').value='';
+  load();
+}
+
+async function generate(id){
+  const btn = document.querySelector(`#card-${id} .btn`);
+  btn.innerHTML='<span class="loading"></span>Genereren...'; btn.disabled=true;
+  await fetch('/api/respond?key='+KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});
+  load();
+}
+
+async function regen(id){
+  await fetch('/api/respond?key='+KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});
+  load();
+}
+
+function copyResp(id){
+  const text = document.getElementById('resp-'+id).textContent;
+  navigator.clipboard.writeText(text).then(()=>{ alert('Gekopieerd! Plak het nu op Google.'); });
+}
+
+async function markDone(id){
+  await fetch('/api/reviews/'+id+'/responded?key='+KEY,{method:'POST'});
+  load();
+}
+
+load();
+</script>
+</body>
+</html>
