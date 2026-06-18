@@ -11,7 +11,7 @@ load_dotenv()
 app    = Flask(__name__, static_folder='static')
 claude = anthropic.Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
 ADMIN_KEY = os.getenv('ADMIN_KEY', 'jarvis-admin-2024')
-BASE_URL  = os.getenv('BASE_URL', 'http://localhost:8081')
+BASE_URL  = os.getenv('BASE_URL', 'https://web-production-e2e5c.up.railway.app')
 
 # ── Database ───────────────────────────────────────────────
 def db():
@@ -104,7 +104,7 @@ def send_welcome_email(email, api_key, business_name, trial=False):
   </div>
 </div>"""
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = 'Je ReviewHost proefperiode is gestart!'
+    msg['Subject'] = 'Je ReviewHost proefperiode is gestart!' if trial else 'Je ReviewHost account is geactiveerd!'
     msg['From']    = gmail
     msg['To']      = email
     msg.attach(MIMEText(body, 'html'))
@@ -304,6 +304,27 @@ def mark_responded(rid):
     c = db()
     c.execute('UPDATE reviews SET responded=1 WHERE id=? AND api_key=?', (rid, key))
     c.commit(); c.close()
+    return jsonify({'ok': True})
+
+@app.route('/unsubscribe')
+def unsubscribe():
+    email = request.args.get('email', '')
+    return f'''<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Uitgeschreven</title>
+<style>body{{font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#0a0a0f}}
+.box{{background:#111;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:40px;text-align:center;max-width:400px}}
+h2{{color:#fff;margin-bottom:12px}}p{{color:rgba(255,255,255,.45);font-size:14px}}</style></head>
+<body><div class="box"><h2>Je bent uitgeschreven</h2>
+<p>{email} ontvangt geen e-mails meer van ReviewHost.</p></div></body></html>'''
+
+@app.route('/api/admin/cancel', methods=['POST'])
+@require_admin
+def admin_cancel():
+    data  = request.json
+    email = data.get('email', '').strip()
+    c = db()
+    c.execute('UPDATE customers SET active=0 WHERE email=?', (email,))
+    c.commit()
+    c.close()
     return jsonify({'ok': True})
 
 if __name__ == '__main__':

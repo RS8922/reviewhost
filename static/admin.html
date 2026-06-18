@@ -62,7 +62,7 @@ td{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13p
   <div class="section">
     <h2>Klanten</h2>
     <table>
-      <thead><tr><th>BEDRIJF / EMAIL</th><th>STATUS</th><th>API KEY</th><th>AANGEMELD</th></tr></thead>
+      <thead><tr><th>BEDRIJF / EMAIL</th><th>STATUS</th><th>API KEY</th><th>AANGEMELD</th><th>ACTIE</th></tr></thead>
       <tbody id="customers-table"><tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,.3);padding:30px">Laden...</td></tr></tbody>
     </table>
   </div>
@@ -75,8 +75,8 @@ async function load(){
   const r = await fetch('/api/admin/stats?admin_key='+ADMIN_KEY);
   if(r.status===401){ document.body.innerHTML='<div style="text-align:center;padding:100px;color:#ff6b6b;font-size:20px">Geen toegang.</div>'; return; }
   const d = await r.json();
-  document.getElementById('k-mrr').textContent = '€'+d.mrr;
-  document.getElementById('k-arr').textContent = '€'+d.arr;
+  document.getElementById('k-mrr').textContent = '€'+d.mrr.toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('k-arr').textContent = '€'+d.arr.toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2});
   document.getElementById('k-active').textContent = d.active_customers;
   document.getElementById('k-today').textContent = d.reviews_today;
   const tbody = document.getElementById('customers-table');
@@ -86,6 +86,7 @@ async function load(){
       <td><span class="badge ${c.active?'badge-on':'badge-off'}">${c.active?'ACTIEF':'INACTIEF'}</span></td>
       <td style="font-family:monospace;font-size:11px;color:rgba(255,255,255,.4)">${c.api_key.slice(0,16)}...</td>
       <td style="color:rgba(255,255,255,.45)">${(c.created_at||'').slice(0,10)}</td>
+      <td>${c.active?`<button onclick="cancelSub('${c.email}')" style="background:rgba(255,100,100,.12);border:1px solid rgba(255,100,100,.25);color:#ff6464;padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer">Opzeggen</button>`:'—'}</td>
     </tr>`).join('') : '<tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,.3);padding:30px">Nog geen klanten</td></tr>';
 }
 
@@ -95,17 +96,29 @@ async function activateCustomer(){
   const res   = document.getElementById('act-result');
   if(!email){ alert('Vul een emailadres in'); return; }
   res.style.display='block'; res.innerHTML='<span style="color:rgba(255,255,255,.4)">Bezig...</span>';
-  const r = await fetch('/api/admin/activate?admin_key='+ADMIN_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,business:biz})});
-  const d = await r.json();
-  if(d.ok){
-    res.innerHTML=`<div style="background:rgba(40,200,100,.1);border:1px solid rgba(40,200,100,.25);border-radius:10px;padding:16px;margin-top:12px">
-      <div style="color:#28c864;font-weight:700;margin-bottom:8px">Geactiveerd! Welkomstmail verstuurd naar ${email}</div>
-      <div style="font-family:monospace;font-size:12px;color:rgba(255,255,255,.5)">API key: ${d.api_key}</div>
-    </div>`;
-    document.getElementById('act-email').value='';
-    document.getElementById('act-biz').value='';
+  try {
+    const r = await fetch('/api/admin/activate?admin_key='+ADMIN_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,business:biz})});
+    const d = await r.json();
+    if(d.ok){
+      res.innerHTML=`<div style="background:rgba(40,200,100,.1);border:1px solid rgba(40,200,100,.25);border-radius:10px;padding:16px;margin-top:12px">
+        <div style="color:#28c864;font-weight:700;margin-bottom:8px">Geactiveerd! Welkomstmail verstuurd naar ${email}</div>
+        <div style="font-family:monospace;font-size:12px;color:rgba(255,255,255,.5)">API key: ${d.api_key}</div>
+      </div>`;
+      document.getElementById('act-email').value='';
+      document.getElementById('act-biz').value='';
+      load();
+    } else {
+      res.innerHTML=`<span style="color:#ff6464">Fout: ${d.error||'onbekend'}</span>`;
+    }
+  } catch(e){ res.innerHTML=`<span style="color:#ff6464">Fout: ${e.message}</span>`; }
+}
+
+async function cancelSub(email){
+  if(!confirm(`Abonnement van ${email} opzeggen?`)) return;
+  try {
+    await fetch('/api/admin/cancel?admin_key='+ADMIN_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
     load();
-  }
+  } catch(e){ alert('Fout: '+e.message); }
 }
 
 load(); setInterval(load, 30000);

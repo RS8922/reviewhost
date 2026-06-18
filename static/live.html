@@ -70,8 +70,8 @@ async function load(){
   const d = await r.json();
   document.getElementById('k-active').textContent = d.active;
   document.getElementById('k-total').textContent  = d.total + ' aangemeld';
-  document.getElementById('k-mrr').textContent    = '€' + d.mrr;
-  document.getElementById('k-arr').textContent    = '€' + d.arr;
+  document.getElementById('k-mrr').textContent    = '€' + d.mrr.toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('k-arr').textContent    = '€' + d.arr.toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2});
   document.getElementById('k-today').textContent  = d.reviews_today;
   document.getElementById('k-total-r').textContent = d.reviews_total + ' totaal';
   document.getElementById('updated').textContent  = 'Bijgewerkt: ' + new Date().toLocaleTimeString('nl-NL');
