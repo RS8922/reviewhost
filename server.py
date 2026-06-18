@@ -108,12 +108,32 @@ def send_welcome_email(email, api_key, business_name, trial=False):
     msg['From']    = gmail
     msg['To']      = email
     msg.attach(MIMEText(body, 'html'))
-    try:
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as s:
-            s.login(gmail, pwd)
-            s.sendmail(gmail, email, msg.as_string())
-    except Exception as e:
-        print(f'[EMAIL ERROR] {e}')
+    import threading
+    def _send():
+        errors = []
+        # Probeer eerst port 587 (STARTTLS), dan 465 (SSL)
+        for attempt in range(3):
+            try:
+                try:
+                    with smtplib.SMTP('smtp.gmail.com', 587, timeout=15) as s:
+                        s.ehlo()
+                        s.starttls()
+                        s.ehlo()
+                        s.login(gmail, pwd)
+                        s.sendmail(gmail, email, msg.as_string())
+                        print(f'[EMAIL OK] {email} (587/TLS, poging {attempt+1})')
+                        return
+                except Exception as e1:
+                    with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=15) as s:
+                        s.login(gmail, pwd)
+                        s.sendmail(gmail, email, msg.as_string())
+                        print(f'[EMAIL OK] {email} (465/SSL, poging {attempt+1})')
+                        return
+            except Exception as e:
+                errors.append(str(e))
+                import time; time.sleep(2)
+        print(f'[EMAIL FAIL] {email} na 3 pogingen: {errors[-1]}')
+    threading.Thread(target=_send, daemon=True).start()
 
 # ── Static pages ───────────────────────────────────────────
 @app.route('/')
