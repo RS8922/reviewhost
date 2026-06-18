@@ -164,7 +164,7 @@ def admin_stats():
     today   = c.execute("SELECT COUNT(*) FROM reviews WHERE created_at>=date('now')").fetchone()[0]
     custs   = c.execute('SELECT email,business_name,active,api_key,created_at FROM customers ORDER BY created_at DESC').fetchall()
     c.close()
-    mrr = active * 49
+    mrr = active * 54.5
     return jsonify({
         'total_customers': total, 'active_customers': active,
         'mrr': mrr, 'arr': mrr * 12,
@@ -184,7 +184,7 @@ def live_stats():
     custs   = c.execute('SELECT email,business_name,active,created_at FROM customers ORDER BY created_at DESC').fetchall()
     days    = c.execute("SELECT date(created_at) as d, COUNT(*) as n FROM reviews GROUP BY date(created_at) ORDER BY date(created_at) DESC LIMIT 14").fetchall()
     c.close()
-    mrr = active * 49
+    mrr = active * 54.5
     return jsonify({
         'active': active, 'total': total, 'mrr': mrr, 'arr': mrr * 12,
         'reviews_total': reviews, 'reviews_today': today,
