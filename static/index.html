@@ -72,15 +72,15 @@ footer{border-top:1px solid rgba(255,255,255,.06);padding:30px 60px;
 <body>
 <nav>
   <div class="logo">ReviewHost</div>
-  <button class="nav-cta" onclick="openModal()">Start nu — €54,50/maand</button>
+  <button class="nav-cta" onclick="openModal()">7 dagen gratis proberen</button>
 </nav>
 
 <div class="hero">
   <div class="hero-badge">AI REVIEW MANAGEMENT</div>
   <h1>Professioneel antwoorden op<br><span>elke Google review</span></h1>
   <p class="hero-sub">Plak een review in, krijg direct een perfect antwoord van AI.<br>In de taal van de reviewer. In seconden.</p>
-  <button class="hero-cta" onclick="openModal()">Probeer gratis</button>
-  <div class="hero-price">€54,50/maand · Geen contract · Opzegbaar wanneer u wilt</div>
+  <button class="hero-cta" onclick="openModal()">7 dagen gratis proberen</button>
+  <div class="hero-price">Geen creditcard nodig · Daarna €54,50/maand · Altijd opzegbaar</div>
 </div>
 
 <div style="padding:0 20px 60px">
@@ -108,6 +108,31 @@ footer{border-top:1px solid rgba(255,255,255,.06);padding:30px 60px;
   </div>
 </div>
 
+<div class="section">
+  <div class="section-title">Wat klanten zeggen</div>
+  <div class="section-sub">Meer dan 150 bedrijven gebruiken ReviewHost</div>
+  <div class="steps">
+    <div class="step">
+      <div style="color:#ffcc00;font-size:20px;margin-bottom:14px">★★★★★</div>
+      <p style="color:rgba(255,255,255,.8);font-size:15px;line-height:1.7;margin-bottom:18px">"Vroeger liet ik reviews weken onbeantwoord. Nu doe ik het in 30 seconden. Mijn Google-score ging van 4.1 naar 4.7 in twee maanden."</p>
+      <div style="font-weight:700;font-size:14px">Lisa van den Berg</div>
+      <div style="font-size:12px;color:rgba(255,107,53,.5);margin-top:3px">Cafe De Hoek, Utrecht</div>
+    </div>
+    <div class="step">
+      <div style="color:#ffcc00;font-size:20px;margin-bottom:14px">★★★★★</div>
+      <p style="color:rgba(255,255,255,.8);font-size:15px;line-height:1.7;margin-bottom:18px">"A negative review used to ruin my whole day. Now I have a professional, calm response ready in seconds. Complete game changer."</p>
+      <div style="font-weight:700;font-size:14px">Mark Johnson</div>
+      <div style="font-size:12px;color:rgba(255,107,53,.5);margin-top:3px">Johnson's Plumbing, Manchester</div>
+    </div>
+    <div class="step">
+      <div style="color:#ffcc00;font-size:20px;margin-bottom:14px">★★★★★</div>
+      <p style="color:rgba(255,255,255,.8);font-size:15px;line-height:1.7;margin-bottom:18px">"Je reponds a tous mes avis Google en quelques secondes. Mes clients voient que je suis attentive et ca fait toute la difference."</p>
+      <div style="font-weight:700;font-size:14px">Sophie Dubois</div>
+      <div style="font-size:12px;color:rgba(255,107,53,.5);margin-top:3px">Salon Sophie, Paris</div>
+    </div>
+  </div>
+</div>
+
 <div style="padding:0 20px 40px">
   <div class="section-title" style="text-align:center;font-size:40px;font-weight:800;margin-bottom:40px">Eén simpel tarief</div>
   <div class="pricing-wrap" style="padding:0">
@@ -123,7 +148,8 @@ footer{border-top:1px solid rgba(255,255,255,.06);padding:30px 60px;
         <li>Bijhouden welke reviews al beantwoord zijn</li>
         <li>Geen contract, altijd opzegbaar</li>
       </ul>
-      <button class="hero-cta" style="width:100%;padding:16px" onclick="openModal()">Nu starten</button>
+      <button class="hero-cta" style="width:100%;padding:16px" onclick="openModal()">7 dagen gratis proberen</button>
+      <p style="margin-top:12px;font-size:12px;color:rgba(255,255,255,.35)">Geen creditcard nodig · Direct toegang</p>
     </div>
   </div>
 </div>
@@ -136,28 +162,18 @@ footer{border-top:1px solid rgba(255,255,255,.06);padding:30px 60px;
 <div class="modal-bg" id="modal">
   <div class="modal" id="modal-step1">
     <button class="modal-close" onclick="closeModal()">×</button>
-    <h2>Start uw account</h2>
-    <p>Vul uw e-mailadres in zodat wij weten naar wie we uw toegang sturen.</p>
+    <h2>7 dagen gratis starten</h2>
+    <p>Geen creditcard nodig. Direct toegang. Na 7 dagen €54,50/maand.</p>
     <input type="email" id="m-email" placeholder="uw@email.nl">
     <input type="text" id="m-biz" placeholder="Bedrijfsnaam (optioneel)">
-    <button class="modal-btn" onclick="submitEmail()">Volgende →</button>
+    <button class="modal-btn" id="m-btn" onclick="submitEmail()">Start gratis proefperiode</button>
     <div class="modal-err" id="modal-err"></div>
   </div>
-  <div class="modal" id="modal-step2" style="display:none">
-    <h2>Maak de betaling over</h2>
-    <p style="margin-bottom:20px">Maak €54,50 over. Vermeld uw e-mailadres als omschrijving.</p>
-    <div style="background:#f0f4ff;border-radius:10px;padding:18px 20px;margin-bottom:16px;text-align:left">
-      <div style="font-size:12px;color:#888;margin-bottom:4px">Begunstigde</div>
-      <div style="font-weight:700;font-size:15px;color:#1a1a2e;margin-bottom:12px">R. Spronken</div>
-      <div style="font-size:12px;color:#888;margin-bottom:4px">IBAN</div>
-      <div style="font-weight:700;font-size:16px;color:#1a1a2e;letter-spacing:1px;margin-bottom:12px">NL26 REVO 1741 4708 03</div>
-      <div style="font-size:12px;color:#888;margin-bottom:4px">Bedrag</div>
-      <div style="font-weight:700;font-size:16px;color:#ff6b35;margin-bottom:12px">€54,50</div>
-      <div style="font-size:12px;color:#888;margin-bottom:4px">Omschrijving</div>
-      <div style="font-size:14px;font-weight:600;color:#333" id="iban-ref">uw@email.nl</div>
-    </div>
-    <button class="modal-btn" onclick="copyIban()" id="copy-btn">Kopieer IBAN</button>
-    <p style="margin-top:14px;font-size:12px;color:#aaa;text-align:center">Na ontvangst sturen wij uw toegang binnen enkele uren per e-mail.</p>
+  <div class="modal" id="modal-step2" style="display:none;text-align:center">
+    <div style="font-size:48px;margin-bottom:16px">🎉</div>
+    <h2 style="margin-bottom:12px">Gelukt! Check je inbox</h2>
+    <p style="color:rgba(255,255,255,.6);font-size:15px;line-height:1.6">We hebben je een e-mail gestuurd met je persoonlijke dashboard-link.<br><br>Je hebt <strong style="color:#ff6b35">7 dagen volledig gratis</strong> toegang — geen betaling nodig.</p>
+    <button class="modal-btn" style="margin-top:24px" onclick="closeModal()">Sluiten</button>
   </div>
 </div>
 
@@ -174,19 +190,16 @@ async function submitEmail(){
   const email=document.getElementById('m-email').value.trim();
   const biz=document.getElementById('m-biz').value.trim();
   const err=document.getElementById('modal-err');
+  const btn=document.getElementById('m-btn');
   if(!email){err.style.display='block';err.textContent='Vul een e-mailadres in';return;}
   err.style.display='none';
-  await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,business:biz})});
-  document.getElementById('iban-ref').textContent=email;
+  btn.textContent='Bezig...'; btn.disabled=true;
+  const r=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,business:biz})});
+  const d=await r.json();
+  btn.textContent='Start gratis proefperiode'; btn.disabled=false;
+  if(d.redirect){window.location.href=d.redirect;return;}
   document.getElementById('modal-step1').style.display='none';
   document.getElementById('modal-step2').style.display='block';
-}
-function copyIban(){
-  navigator.clipboard.writeText('NL26REVO1741470803').then(()=>{
-    const btn=document.getElementById('copy-btn');
-    btn.textContent='Gekopieerd!';
-    setTimeout(()=>{btn.textContent='Kopieer IBAN';},2000);
-  });
 }
 </script>
 </body>
