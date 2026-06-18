@@ -144,11 +144,9 @@ def checkout():
     c = db()
     existing = c.execute('SELECT * FROM customers WHERE email=?', (email,)).fetchone()
     if existing and existing['active']:
-        return jsonify({'redirect': f'/dashboard?key={existing["api_key"]}'}), 200
-    trial_ends = (datetime.now() + timedelta(days=7)).isoformat()
-    if existing and existing['active']:
         c.close()
         return jsonify({'redirect': f'/dashboard?key={existing["api_key"]}'}), 200
+    trial_ends = (datetime.now() + timedelta(days=7)).isoformat()
     if existing:
         api_key = existing['api_key']
         c.execute('UPDATE customers SET active=1, trial_ends_at=? WHERE email=?', (trial_ends, email))
@@ -173,7 +171,7 @@ def admin_activate():
     c = db()
     row = c.execute('SELECT * FROM customers WHERE email=?', (email,)).fetchone()
     if row:
-        c.execute('UPDATE customers SET active=1 WHERE email=?', (email,))
+        c.execute('UPDATE customers SET active=1, trial_ends_at=NULL WHERE email=?', (email,))
         c.commit()
         api_key = row['api_key']
     else:
